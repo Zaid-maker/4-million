@@ -9,7 +9,7 @@ os.system("git config --global user.email 'pzhafeez@gmail.com'")
 
 # for loop
 for i in range(ip):
-  os.system(f'git commit --allow-empty -m "Commit {i} of {ip}"')
+  os.system(f'git commit --allow-empty -m "🥵 Commit {i} of {ip}"')
 
 print("Commited " + str(ip) + " times")
 
