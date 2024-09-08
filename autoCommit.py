@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 def get_valid_commit_count():
     while True:
@@ -18,18 +19,43 @@ def get_auto_push_choice():
             return autoPush
         print("Invalid choice. Please enter 'y' or 'n'.")
 
-# Get validated inputs
+def update_file(file_name, new_value):
+    with open(file_name, 'w') as file:
+        file.write(str(new_value) + '\n')
+    print(f"File '{file_name}' updated to: {new_value}")
+
+def get_current_value(file_name):
+    if os.path.exists(file_name):
+        with open(file_name, 'r') as file:
+            try:
+                return int(file.read().strip())
+            except ValueError:
+                return 0  # Handle non-integer content
+    return 0
+
+# Get inputs
 ip = get_valid_commit_count()
 autoPush = get_auto_push_choice()
 
-# for loop for git commits
+file_name = "counter.txt"
+
+# Get the current value in the file or initialize to 0
+current_value = get_current_value(file_name)
+
+# Loop for committing changes
 for i in range(ip):
-    commit_message = f"🥵 Commit {i+1} of {ip}"
+    current_value += 1  # Increment the current value
+    update_file(file_name, current_value)  # Update the file with the new value
+    
+    # Add the file to staging, then commit
     try:
-        subprocess.run(['git', 'commit', '--allow-empty', '-m', commit_message], check=True)
+        subprocess.run(['git', 'add', file_name], check=True)
+        commit_message = f"Updated {file_name} to {current_value} - Commit {i+1} of {ip}"
+        subprocess.run(['git', 'commit', '-m', commit_message], check=True)
         print(f"Committed: {commit_message}")
     except subprocess.CalledProcessError as e:
         print(f"Failed to commit: {e}")
+        break
 
 print(f"Committed {ip} times")
 
